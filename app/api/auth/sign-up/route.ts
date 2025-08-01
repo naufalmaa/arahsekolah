@@ -3,6 +3,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
+import { Prisma } from '@prisma/client';
 
 export async function POST(req: NextRequest) {
   try {
@@ -27,23 +28,23 @@ export async function POST(req: NextRequest) {
     const passwordHash = await bcrypt.hash(password, saltRounds);
 
     // 3. Create user
-    const user = await prisma.user.create({
-      data: {
-        name,
-        email,
-        passwordHash, // use passwordHash instead of password
-        role: "USER",           // default role
-        assignedSchoolId: null, // no school yet
-      },
-    });
+    // const user = await prisma.user.create({
+    //   data: {
+    //     name,
+    //     email,
+    //     passwordHash, // use passwordHash instead of password
+    //     role: "USER",           // default role
+    //     assignedSchoolId: null, // no school yet
+    //   },
+    // });
 
     return NextResponse.json(
       { message: "Account created. Please sign in." },
       { status: 201 }
     );
-  } catch (err: any) {
+  } catch (err: unknown) {
     // Prisma “unique constraint” error code
-    if (err.code === "P2002" && err.meta?.target?.includes("email")) {
+    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
       return NextResponse.json(
         { error: "Email is already registered." },
         { status: 409 }

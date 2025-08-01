@@ -2,6 +2,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { IdParamSchema, UpdateSchoolSchema } from '@/lib/schemas'; // Import schemas
+import { Prisma } from '@prisma/client'; // Import Prisma
 
 export async function GET(
   request: Request,
@@ -51,7 +52,7 @@ export async function GET(
     }
 
     return NextResponse.json({ ...school, avgRating });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Failed to fetch school:", error);
     return NextResponse.json(
       { message: "Internal Server Error" },
@@ -98,9 +99,9 @@ export async function PUT(
       data: dataToUpdate, // Use validated data
     });
     return NextResponse.json(updatedSchool);
-  } catch (error: any) {
-    console.error("Failed to update school:", error);
-    if (error.code === 'P2025') {
+  } catch (err: unknown) {
+    console.error("Failed to update school:", err);
+    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025') {
         return NextResponse.json({ message: "School not found for update." }, { status: 404 });
     }
     return NextResponse.json(

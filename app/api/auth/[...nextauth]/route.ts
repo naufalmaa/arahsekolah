@@ -1,6 +1,6 @@
 // File: app/api/auth/[...nextauth]/route.ts
 
-import NextAuth, { NextAuthOptions, Session, DefaultSession, DefaultUser } from "next-auth"; // Added DefaultSession, DefaultUser
+import NextAuth, { NextAuthOptions } from "next-auth"; // Added DefaultSession, DefaultUser
 import GoogleProvider from "next-auth/providers/google"; // Add this import
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";

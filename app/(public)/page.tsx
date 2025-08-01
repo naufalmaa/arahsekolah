@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 export default function LandingPage() {
@@ -45,7 +45,7 @@ export default function LandingPage() {
           </div>
           
           <h1 className="text-4xl lg:text-6xl font-bold text-slate-900 leading-tight mb-6 text-center lg:text-left">
-            Find Bandung's
+            Find Bandung&apos;s
             <span className="block text-slate-700">
               Best Elementary Schools
             </span>
@@ -177,10 +177,10 @@ export default function LandingPage() {
         
         <div className="max-w-4xl mx-auto text-center relative z-10">
           <h2 className="text-4xl lg:text-5xl font-bold mb-6">
-            Ready to Find Your Child's Perfect School?
+            Ready to Find Your Child&apos;s Perfect School?
           </h2>
           <p className="text-xl mb-10 opacity-90 leading-relaxed">
-            Join thousands of parents in Bandung who trust ArahSekolah to make the best educational decisions for their children's future.
+            Join thousands of parents in Bandung who trust ArahSekolah to make the best educational decisions for their children&apos;s future.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button asChild className="bg-white text-slate-800 hover:bg-slate-100 text-lg px-10 py-4 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 font-semibold">

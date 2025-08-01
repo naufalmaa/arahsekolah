@@ -2,7 +2,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Review } from "@prisma/client";
 import { format } from "date-fns";
 import { CalendarIcon, StarFilledIcon } from "@radix-ui/react-icons";
 import { toast } from "sonner";
@@ -12,7 +11,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -58,14 +56,14 @@ const ReviewList = ({ schoolId }: ReviewListProps) => {
   const { reviews, loading, error } = useAppSelector((state) => state.review);
 
   const { data: session } = useSession();
-  const router = useRouter();
+  // const router = useRouter();
 
   const userId = session?.user?.id;
   const userRole = session?.user?.role;
   const userName = session?.user?.name;
   const userImage = session?.user?.image;
 
-  const [loadingReviews, setLoadingReviews] = useState(true);
+  // const [loadingReviews, setLoadingReviews] = useState(true);
 
   useEffect(() => {
     dispatch(fetchReviewsBySchoolId(schoolId));
@@ -99,18 +97,18 @@ const ReviewList = ({ schoolId }: ReviewListProps) => {
       });
   };
 
-  const renderStarRating = (rating: number) => {
-    return (
-      <div className="flex items-center space-x-1 text-yellow-400">
-        {[...Array(5)].map((_, i) => (
-          <StarFilledIcon
-            key={i}
-            className={i < rating ? "text-yellow-400" : "text-slate-300"}
-          />
-        ))}
-      </div>
-    );
-  };
+  // const renderStarRating = (rating: number) => {
+  //   return (
+  //     <div className="flex items-center space-x-1 text-yellow-400">
+  //       {[...Array(5)].map((_, i) => (
+  //         <StarFilledIcon
+  //           key={i}
+  //           className={i < rating ? "text-yellow-400" : "text-slate-300"}
+  //         />
+  //       ))}
+  //     </div>
+  //   );
+  // };
 
   const renderSkeletons = () => (
     <div className="space-y-6 mt-8">
@@ -164,8 +162,8 @@ const ReviewList = ({ schoolId }: ReviewListProps) => {
             ⭐ {reviews.length} Review{reviews.length !== 1 ? 's' : ''}
           </div>
         </div>
-        {/* {canAddReview && !hasUserReviewed && ( */}
-        {canAddReview &&  (
+        {/* {canAddReview &&  ( */}
+        {canAddReview && !hasUserReviewed && (
           <Dialog
             open={isAddReviewModalOpen}
             onOpenChange={setIsAddReviewModalOpen}

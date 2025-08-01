@@ -71,44 +71,6 @@ export default function EditSchoolForm({ schoolData, onFormSubmitted }: EditScho
     },
   });
 
-  // const updateSchoolMutation = useMutation({
-  //   mutationFn: async (updatedData: z.infer<typeof formSchema>) => {
-  //     const dataToSend = {
-  //       ...updatedData,
-  //       achievements: updatedData.achievements || "", // Send as string or null
-  //       programs: updatedData.programs || "", // Send as string or null
-  //       // Convert lat and lng to numbers, handling null/empty string cases
-  //       lat: updatedData.lat === '' ? null : (typeof updatedData.lat === 'string' ? parseFloat(updatedData.lat) : updatedData.lat),
-  //       lng: updatedData.lng === '' ? null : (typeof updatedData.lng === 'string' ? parseFloat(updatedData.lng) : updatedData.lng),
-  //         // Ensure optional string fields are null if empty string
-  //       telp: updatedData.telp || "",
-  //       contact: updatedData.contact || "",
-  //       website: updatedData.website || "",
-  //     };
-
-  //     const res = await fetch(`/api/schools/${schoolData.id}`, {
-  //       method: "PUT",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify(dataToSend),
-  //     });
-
-  //     if (!res.ok) {
-  //       const errorBody = await res.json().catch(() => ({ message: 'Unknown error' }));
-  //       console.error("Update School API Error:", errorBody);
-  //       throw new Error(errorBody.error || errorBody.message || "Failed to update school.");
-  //     }
-  //     return res.json();
-  //   },
-  //   onSuccess: () => {
-  //     queryClient.invalidateQueries({ queryKey: ["school", schoolData.id] });
-  //     toast.success("School details updated successfully!");
-  //     onFormSubmitted();
-  //   },
-  //   onError: (error) => {
-  //     toast.error(`Error updating school: ${error.message}`);
-  //   },
-  // });
-
   const dispatch = useAppDispatch();
   const { loading } = useAppSelector(state => state.school);
 

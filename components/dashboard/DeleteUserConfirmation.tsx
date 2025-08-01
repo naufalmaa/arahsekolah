@@ -27,7 +27,7 @@ export default function DeleteUserConfirmation({ user, onCancel, onFinished }: D
             await dispatch(deleteUserAsync(user.id)).unwrap();
             toast.success(`User "${user.name}" has been deleted.`);
             onFinished();
-        } catch (error: any) {
+        } catch (error: unknown) {
             toast.error(`Deletion failed: ${error}`);
         } finally {
             setIsLoading(false);
@@ -38,7 +38,7 @@ export default function DeleteUserConfirmation({ user, onCancel, onFinished }: D
 
     return (
         <div>
-            <DialogDescription className="py-4">
+            <DialogDescription className="text-lg py-4">
                 Are you sure you want to delete the user account for <span className="font-semibold text-gray-800">{user.name}</span>? This action cannot be undone.
             </DialogDescription>
             <DialogFooter>

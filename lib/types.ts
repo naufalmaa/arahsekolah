@@ -87,7 +87,7 @@ export interface CreateReviewInput {
   kepemimpinan: number;
 }
 
-export interface UpdateReviewInput extends Partial<CreateReviewInput> {}
+// export interface UpdateReviewInput extends Partial<CreateReviewInput> {}
 
 export interface CreateUserInput {
   name: string;
@@ -97,14 +97,14 @@ export interface CreateUserInput {
   assignedSchoolId?: number;
 }
 
-export interface UpdateUserInput extends Partial<CreateUserInput> {}
+// export interface UpdateUserInput extends Partial<CreateUserInput> {}
 
 // Permission types
 export type Permission = 'create' | 'read' | 'update' | 'delete';
 export type Resource = 'school' | 'review' | 'user';
 
 // API Response types
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   data?: T;
   error?: string;
   message?: string;

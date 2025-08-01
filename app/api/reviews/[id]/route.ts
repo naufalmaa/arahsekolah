@@ -54,7 +54,7 @@ export async function DELETE(
       { message: "Review deleted successfully" },
       { status: 200 }
     );
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error deleting review:", error);
 
     return NextResponse.json(
@@ -135,7 +135,7 @@ export async function PUT(
       data: dataToUpdate,
     });
     return NextResponse.json(updated);
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error(err);
     // CORRECTED: The explicit `findUnique` check above makes this catch block less critical
     // for not-found errors, but it's good to keep for other potential errors.

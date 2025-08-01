@@ -63,9 +63,20 @@ async function apiCall<T>(
     }
 
     return { success: true, data: data as T };
-  } catch (error: any) {
+  } catch (error: unknown) { // Changed 'any' to 'unknown'
     console.error('Network or unexpected error:', error);
-    return { success: false, error: error.message || 'An unexpected error occurred.' };
+    // Type narrowing to safely access 'message' property
+    let errorMessage = 'An unexpected error occurred.';
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    } else if (typeof error === 'string') {
+      errorMessage = error;
+    } else if (typeof error === 'object' && error !== null && 'message' in error && typeof (error as any).message === 'string') {
+        // This handles cases where error is an object but not an instance of Error,
+        // but still has a 'message' property.
+        errorMessage = (error as any).message;
+    }
+    return { success: false, error: errorMessage };
   }
 }
 
@@ -141,7 +152,7 @@ export const updateReview = async (id: number, reviewData: z.infer<typeof Update
 };
 
 export const deleteReview = async (id: number) => {
-  return apiCall<{}>( // Expect an empty object or success message
+  return apiCall<Record<string, never>>( // Changed '{}' to 'Record<string, never>'
     `${API_BASE_URL}/reviews/${id}`,
     'DELETE'
   );

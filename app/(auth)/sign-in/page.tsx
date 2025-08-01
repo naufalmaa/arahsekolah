@@ -86,7 +86,7 @@ export default function SignInPage() {
           </div>
           <h1 className="text-4xl font-bold mb-4">Welcome Back to ArahSekolah!</h1>
           <p className="text-xl opacity-90 leading-relaxed">
-            Sign in to continue exploring Bandung's best elementary schools and
+            Sign in to continue exploring Bandung&apos;s best elementary schools and
             manage your school search journey.
           </p>
         </div>
@@ -223,7 +223,7 @@ export default function SignInPage() {
 
               <div className="mt-8 text-center">
                 <p className="text-slate-600 text-base">
-                  Don't have an account?{" "}
+                  Don&apos;t have an account?{" "}
                   <Link
                     href="/auth/sign-up"
                     className="text-slate-800 hover:text-slate-900 font-semibold hover:underline transition-colors"

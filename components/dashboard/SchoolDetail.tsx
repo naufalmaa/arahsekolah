@@ -62,9 +62,9 @@ export default function SchoolDetail({ schoolId }: SchoolDetailProps) {
     return <DetailPageSkeleton />;
   }
 
-  const handleEditSchoolClick = () => {
-    setIsEditSchoolModalOpen(true);
-  };
+  // const handleEditSchoolClick = () => {
+  //   setIsEditSchoolModalOpen(true);
+  // };
 
   return (
     <div className="space-y-8">
@@ -104,7 +104,7 @@ export default function SchoolDetail({ schoolId }: SchoolDetailProps) {
                     <DialogHeader className="p-6 pb-6 border-b border-slate-200">
                       <DialogTitle className="text-3xl font-bold text-slate-900">Edit School Details</DialogTitle>
                       <DialogDescription className="text-slate-600 text-lg">
-                        Make changes to the school's information here. Click save when you're done.
+                        Make changes to the school&apos;ss information here. Click save when you&apos;sre done.
                       </DialogDescription>
                     </DialogHeader>
                     <div className="overflow-y-auto max-h-[calc(90vh-150px)]">

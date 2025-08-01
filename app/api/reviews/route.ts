@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { CreateReviewSchema, IdParamSchema } from "@/lib/schemas"; // Import schemas
+import { CreateReviewSchema  } from "@/lib/schemas"; // Import schemas
 
 export async function GET(req: NextRequest) {
   const schoolIdParam = req.nextUrl.searchParams.get("schoolId");
@@ -84,7 +84,7 @@ export async function POST(req: NextRequest) {
       },
     });
     return NextResponse.json(review, { status: 201 });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("Error creating review:", err);
     return NextResponse.json(
       { message: "Failed to create review" },

@@ -3,6 +3,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { Prisma } from '@prisma/client'
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import bcrypt from 'bcryptjs';
@@ -70,10 +71,10 @@ export async function POST(req: NextRequest) {
     const { passwordHash, ...userWithoutPassword } = newUser;
     return NextResponse.json(userWithoutPassword, { status: 201 });
 
-  } catch (error: any) {
-    console.error("Error creating user:", error);
+  } catch (err: unknown) {
+    console.error("Error creating user:", err);
     // Handle potential Prisma unique constraint errors
-    if (error.code === 'P2002' && error.meta?.target?.includes('email')) {
+    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
         return NextResponse.json({ error: "Email is already registered." }, { status: 409 });
     }
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });

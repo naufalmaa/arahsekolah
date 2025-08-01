@@ -8,7 +8,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 interface AppProvidersProps {
   children: React.ReactNode;
-  session: any; // NextAuth session object, passed from server
+  session: null; // NextAuth session object, passed from server
 }
 
 export function AppProviders({ children, session }: AppProvidersProps) {

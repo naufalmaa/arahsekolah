@@ -11,7 +11,7 @@ const SchoolMap = dynamic(() => import("@/components/SchoolMap"), {
 });
 
 interface MapClientProps {
-  schoolsWithRating: any[]; // Use a more specific type if possible
+  schoolsWithRating: unknown[]; // Use a more specific type if possible
 }
 
 export default function MapClient({ schoolsWithRating }: MapClientProps) {
