@@ -6,10 +6,11 @@ import { Prisma } from '@prisma/client'; // Import Prisma
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> } // Fixed parameter type
 ) {
+  const resolvedParams = await params; // Await the params Promise
   // Validate 'id' parameter using Zod
-  const paramValidation = IdParamSchema.safeParse(params);
+  const paramValidation = IdParamSchema.safeParse(resolvedParams);
   if (!paramValidation.success) {
     return NextResponse.json(
       { message: "Invalid School ID format.", issues: paramValidation.error.issues },
@@ -63,10 +64,12 @@ export async function GET(
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   // Validate 'id' parameter
-  const paramValidation = IdParamSchema.safeParse(params);
+  const resolvedParams = await params; // Await the params Promise
+
+  const paramValidation = IdParamSchema.safeParse(resolvedParams);
   if (!paramValidation.success) {
     return NextResponse.json(
       { message: "Invalid School ID format.", issues: paramValidation.error.issues },

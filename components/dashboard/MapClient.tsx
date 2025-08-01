@@ -10,8 +10,16 @@ const SchoolMap = dynamic(() => import("@/components/SchoolMap"), {
   loading: () => <p>Loading map...</p>,
 });
 
+interface School {
+  id: number;
+  name: string;
+  lat: number | null;
+  lng: number | null;
+  avgRating: number;
+}
+
 interface MapClientProps {
-  schoolsWithRating: unknown[]; // Use a more specific type if possible
+  schoolsWithRating: School[];
 }
 
 export default function MapClient({ schoolsWithRating }: MapClientProps) {

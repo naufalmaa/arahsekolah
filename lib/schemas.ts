@@ -75,7 +75,7 @@ export const CreateSchoolSchema = z.object({
   status: z.string().min(1, "Status is required."),
   npsn: z.string().min(1, "NPSN is required."),
   bentuk: z.string().min(1, "Bentuk is required."),
-  telp: z.string().optional().nullable(),
+  telp: z.string().min(1, "Telpon is required."),
   alamat: z.string().min(1, "Address is required."),
   kelurahan: z.string().min(1, "Kelurahan is required."),
   kecamatan: z.string().min(1, "Kecamatan is required."),

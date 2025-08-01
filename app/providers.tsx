@@ -2,7 +2,7 @@
 
 "use client"; // This component must be a client component
 
-import { ReactNode, useState } from "react";
+import { useState } from "react";
 import { SessionProvider } from "next-auth/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 

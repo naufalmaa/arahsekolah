@@ -2,7 +2,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
-import { prisma } from "@/lib/prisma";
+// import { prisma } from "@/lib/prisma";
 import { Prisma } from '@prisma/client';
 
 export async function POST(req: NextRequest) {
@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
 
     // 2. Hash password
     const saltRounds = 10;
-    const passwordHash = await bcrypt.hash(password, saltRounds);
+    // const passwordHash = await bcrypt.hash(password, saltRounds);
 
     // 3. Create user
     // const user = await prisma.user.create({

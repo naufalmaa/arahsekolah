@@ -1,7 +1,7 @@
 // app/dashboard/map/MapClient.tsx
 "use client";
 import { useEffect, useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 
@@ -178,7 +178,7 @@ export default function MapClient() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-200">
-                    {schools.map((school, index) => (
+                    {schools.map((school) => (
                       <tr key={school.id} className="hover:bg-slate-50/50 transition-colors duration-200">
                         <td className="px-8 py-6">
                           <div className="flex items-center">

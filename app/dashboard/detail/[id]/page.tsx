@@ -7,14 +7,15 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 
 export default async function DetailPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>; // Fixed parameter type
 }) {
-  const schoolId = parseInt(params.id, 10);
+  const resolvedParams = await params; // Await the params Promise
+  const schoolId = parseInt(resolvedParams.id, 10);
   const session = await getServerSession(authOptions);
 
   return (

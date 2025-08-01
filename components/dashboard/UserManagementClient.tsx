@@ -6,7 +6,7 @@
 import React, { useMemo } from 'react';
 import { useAppSelector } from '@/redux/store';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { User, School, ShieldCheck } from 'lucide-react';
+import { User, ShieldCheck } from 'lucide-react';
 import UserTable from './UserTable';
 import { School as SchoolType } from '@prisma/client';
 

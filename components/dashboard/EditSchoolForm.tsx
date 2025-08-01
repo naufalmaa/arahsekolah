@@ -79,6 +79,21 @@ export default function EditSchoolForm({ schoolData, onFormSubmitted }: EditScho
     if (schoolData) {
       form.reset({
         ...schoolData,
+        name: schoolData.name || "",
+        status: schoolData.status || "",
+        npsn: schoolData.npsn || "",
+        bentuk: schoolData.bentuk || "",
+        telp: schoolData.telp || "",
+        alamat: schoolData.alamat || "",
+        kelurahan: schoolData.kelurahan || "",
+        kecamatan: schoolData.kecamatan || "",
+        lat: schoolData.lat || null,
+        lng: schoolData.lng || null,
+        achievements: Array.isArray(schoolData.achievements) ? schoolData.achievements.join("\n") : (schoolData.achievements || ""),
+        contact: schoolData.contact || "",
+        description: schoolData.description || "",
+        programs: Array.isArray(schoolData.programs) ? schoolData.programs.join("\n") : (schoolData.programs || ""),
+        website: schoolData.website || "",
       });
     }
   }, [schoolData, form]);

@@ -4,8 +4,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 import bcrypt from "bcryptjs";
+import { Prisma } from "@prisma/client";
 
 interface UpdateUserRequestBody {
   name?: string; // Optional because not all fields might be sent for update
@@ -26,10 +27,10 @@ interface PrismaUserUpdateData {
 // PUT update a user (SUPERADMIN only)
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> } // Fixed parameter type
 ) {
-
-  const userId = params.id;
+  const resolvedParams = await params; // Await the params Promise
+  const userId = resolvedParams.id;
 
   const session = await getServerSession(authOptions);
   if (session?.user?.role !== "SUPERADMIN") {
@@ -79,7 +80,7 @@ export async function PUT(
       data: dataToUpdate,
     });
 
-    const { passwordHash, ...userWithoutPassword } = updatedUser;
+    const { ...userWithoutPassword } = updatedUser;
     return NextResponse.json(userWithoutPassword);
 
   } catch (error: unknown) { // Use 'unknown' for caught errors as best practice
@@ -109,14 +110,15 @@ export async function PUT(
 // DELETE a user (SUPERADMIN only)
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> } // Fixed parameter type
 ) {
   const session = await getServerSession(authOptions);
   if (session?.user?.role !== "SUPERADMIN") {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  const userId = params.id;
+  const resolvedParams = await params; // Await the params Promise
+  const userId = resolvedParams.id;
 
   // Prevent SUPERADMIN from deleting themselves
   if (userId === session.user.id) {
@@ -134,12 +136,12 @@ export async function DELETE(
       { message: "User deleted successfully" },
       { status: 200 }
     );
-  } catch (error: any) {
-    if (error.code === "P2025") {
-      // Record to delete not found
-      return NextResponse.json({ error: "User not found." }, { status: 404 });
-    }
-    console.error("Error deleting user:", error);
+  } catch (err: unknown) {
+      console.error("Failed to update school:", err);
+      if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025') {
+          return NextResponse.json({ message: "School not found for update." }, { status: 404 });
+      }
+    console.error("Error deleting user:", err);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

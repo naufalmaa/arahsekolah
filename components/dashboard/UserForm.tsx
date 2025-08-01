@@ -51,10 +51,22 @@ const formSchema = z
     }
   );
 
+// Infer the type from the Zod schema
+type UserFormValues = z.infer<typeof formSchema>;
+
 interface UserFormProps {
   currentUser: UserWithSchool | null;
   schools: School[];
   onFinished: () => void;
+}
+
+function isErrorMessage(error: unknown): error is { message: string } {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "message" in error &&
+    typeof (error as { message: unknown }).message === "string" // Cast to { message: unknown } here is safe
+  );
 }
 
 export default function UserForm({
@@ -78,29 +90,87 @@ export default function UserForm({
 
   const selectedRole = form.watch("role");
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: UserFormValues) => {
     try {
       if (isEditMode) {
-        const updateData: any = { ...values };
-        if (!values.password) delete updateData.password;
-        await dispatch(
-          updateUserAsync({ id: currentUser.id, ...updateData })
-        ).unwrap();
+        // Define a type for the update payload based on what updateUserAsync expects
+        // This assumes updateUserAsync takes a Partial<UserFormValues> plus an id
+        // We use Omit to exclude 'password' from the base UserFormValues, then manually add it if needed.
+        // This is a more precise type than just Partial<UserFormValues>
+        type UpdatePayload = Omit<
+          Partial<UserFormValues>,
+          "password" | "assignedSchoolId"
+        > & {
+          id: string;
+          password?: string; // Add password back as optional for the payload
+          assignedSchoolId?: number | null; // Correct type for assignedSchoolId
+        };
+
+        const updateData: UpdatePayload = {
+          id: currentUser!.id, // currentUser is guaranteed to exist in edit mode
+          name: values.name,
+          email: values.email,
+          role: values.role,
+          // Convert assignedSchoolId to number or null for Prisma
+          assignedSchoolId:
+            values.role === "SCHOOL_ADMIN" && values.assignedSchoolId
+              ? Number(values.assignedSchoolId)
+              : null,
+        };
+
+        // Only include password if it's provided and not an empty string
+        if (values.password && values.password !== "") {
+          updateData.password = values.password;
+        }
+
+        await dispatch(updateUserAsync(updateData)).unwrap();
         toast.success("User updated successfully!");
       } else {
-        if (!values.password) {
+        // For creation, password is required by schema, but double-check here.
+        // The schema's .optional() and .or(z.literal("")) might need adjustment
+        // if you strictly require password for new users.
+        // For new users, if the password field is optional in Zod, it needs to be made required here.
+        // A better approach is to have different schemas for create and update.
+
+        // Given your current code, you're handling it manually with setError:
+        if (!values.password || values.password === "") {
           form.setError("password", {
             type: "manual",
             message: "Password is required for new users.",
           });
           return;
         }
-        await dispatch(createUserAsync(values)).unwrap();
+
+        // Prepare data for creation, converting assignedSchoolId
+        // The `values` from the form are already `UserFormValues`.
+        // We need to transform `assignedSchoolId` to a number or null.
+        const createData = {
+          ...values,
+          assignedSchoolId:
+            values.role === "SCHOOL_ADMIN" && values.assignedSchoolId
+              ? Number(values.assignedSchoolId)
+              : null,
+        };
+
+        await dispatch(createUserAsync(createData)).unwrap();
         toast.success("User created successfully!");
       }
       onFinished();
-    } catch (error: any) {
-      toast.error(`Operation failed: ${error}`);
+    } catch (error: unknown) {
+      let errorMessage = "Operation failed: An unknown error occurred.";
+      if (error instanceof Error) {
+        errorMessage = `Operation failed: ${error.message}`;
+      } else if (typeof error === "string") {
+        errorMessage = `Operation failed: ${error}`;
+      } else if (isErrorMessage(error)) {
+        // Use the custom type guard here
+        errorMessage = `Operation failed: ${error.message}`;
+      } else {
+        // Fallback for truly unexpected error types
+        errorMessage =
+          "Operation failed: An unexpected error occurred. Please try again.";
+      }
+      toast.error(errorMessage);
     }
   };
 
@@ -113,11 +183,13 @@ export default function UserForm({
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-slate-700 font-semibold">Full Name</FormLabel>
+                <FormLabel className="text-slate-700 font-semibold">
+                  Full Name
+                </FormLabel>
                 <FormControl>
-                  <Input 
-                    placeholder="John Doe" 
-                    {...field} 
+                  <Input
+                    placeholder="John Doe"
+                    {...field}
                     className="bg-white/80 border-slate-300 rounded-xl py-3 px-4 text-slate-900 placeholder:text-slate-500 focus:border-slate-400 focus:ring-2 focus:ring-slate-200 transition-all duration-200"
                   />
                 </FormControl>
@@ -125,18 +197,20 @@ export default function UserForm({
               </FormItem>
             )}
           />
-          
+
           <FormField
             control={form.control}
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-slate-700 font-semibold">Email Address</FormLabel>
+                <FormLabel className="text-slate-700 font-semibold">
+                  Email Address
+                </FormLabel>
                 <FormControl>
-                  <Input 
-                    type="email" 
-                    placeholder="user@example.com" 
-                    {...field} 
+                  <Input
+                    type="email"
+                    placeholder="user@example.com"
+                    {...field}
                     className="bg-white/80 border-slate-300 rounded-xl py-3 px-4 text-slate-900 placeholder:text-slate-500 focus:border-slate-400 focus:ring-2 focus:ring-slate-200 transition-all duration-200"
                   />
                 </FormControl>
@@ -144,13 +218,15 @@ export default function UserForm({
               </FormItem>
             )}
           />
-          
+
           <FormField
             control={form.control}
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-slate-700 font-semibold">Password</FormLabel>
+                <FormLabel className="text-slate-700 font-semibold">
+                  Password
+                </FormLabel>
                 <FormControl>
                   <Input
                     type="password"
@@ -167,36 +243,56 @@ export default function UserForm({
               </FormItem>
             )}
           />
-          
+
           <FormField
             control={form.control}
             name="role"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-slate-700 font-semibold">User Role</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormLabel className="text-slate-700 font-semibold">
+                  User Role
+                </FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
                   <FormControl>
                     <SelectTrigger className="bg-white/80 border-slate-300 rounded-xl py-3 px-4 text-slate-900 focus:border-slate-400 focus:ring-2 focus:ring-slate-200 transition-all duration-200">
                       <SelectValue placeholder="Select a role" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent className="bg-white/95 backdrop-blur-md border border-slate-200 rounded-xl shadow-xl">
-                    <SelectItem value="USER" className="text-slate-700 hover:bg-slate-100 rounded-lg">
+                    <SelectItem
+                      value="USER"
+                      className="text-slate-700 hover:bg-slate-100 rounded-lg"
+                    >
                       <div className="flex flex-col">
                         <span className="font-medium">USER</span>
-                        <span className="text-sm text-slate-500">Parent or student account</span>
+                        <span className="text-sm text-slate-500">
+                          Parent or student account
+                        </span>
                       </div>
                     </SelectItem>
-                    <SelectItem value="SCHOOL_ADMIN" className="text-slate-700 hover:bg-slate-100 rounded-lg">
+                    <SelectItem
+                      value="SCHOOL_ADMIN"
+                      className="text-slate-700 hover:bg-slate-100 rounded-lg"
+                    >
                       <div className="flex flex-col">
                         <span className="font-medium">SCHOOL_ADMIN</span>
-                        <span className="text-sm text-slate-500">School administrator account</span>
+                        <span className="text-sm text-slate-500">
+                          School administrator account
+                        </span>
                       </div>
                     </SelectItem>
-                    <SelectItem value="SUPERADMIN" className="text-slate-700 hover:bg-slate-100 rounded-lg">
+                    <SelectItem
+                      value="SUPERADMIN"
+                      className="text-slate-700 hover:bg-slate-100 rounded-lg"
+                    >
                       <div className="flex flex-col">
                         <span className="font-medium">SUPERADMIN</span>
-                        <span className="text-sm text-slate-500">System administrator</span>
+                        <span className="text-sm text-slate-500">
+                          System administrator
+                        </span>
                       </div>
                     </SelectItem>
                   </SelectContent>
@@ -212,7 +308,9 @@ export default function UserForm({
               name="assignedSchoolId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-slate-700 font-semibold">Assign to School</FormLabel>
+                  <FormLabel className="text-slate-700 font-semibold">
+                    Assign to School
+                  </FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
@@ -224,14 +322,16 @@ export default function UserForm({
                     </FormControl>
                     <SelectContent className="bg-white/95 backdrop-blur-md border border-slate-200 rounded-xl shadow-xl max-h-60">
                       {schools.map((school) => (
-                        <SelectItem 
-                          key={school.id} 
+                        <SelectItem
+                          key={school.id}
                           value={school.id.toString()}
                           className="text-slate-700 hover:bg-slate-100 rounded-lg p-3"
                         >
                           <div className="flex flex-col">
                             <span className="font-medium">{school.name}</span>
-                            <span className="text-sm text-slate-500">{school.kelurahan}, {school.kecamatan}</span>
+                            <span className="text-sm text-slate-500">
+                              {school.kelurahan}, {school.kecamatan}
+                            </span>
                           </div>
                         </SelectItem>
                       ))}
@@ -256,14 +356,24 @@ export default function UserForm({
                 </div>
               ) : (
                 <span className="flex items-center justify-center">
-                  {isEditMode ? 'Save Changes' : 'Create User'}
-                  <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  {isEditMode ? "Save Changes" : "Create User"}
+                  <svg
+                    className="ml-2 w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
                   </svg>
                 </span>
               )}
             </Button>
-            
+
             <Button
               type="button"
               variant="outline"

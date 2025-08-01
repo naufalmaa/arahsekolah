@@ -10,7 +10,7 @@ import UserManagementClient from "@/components/dashboard/UserManagementClient";
 import { useAppDispatch } from "@/redux/store";
 import { fetchUsersAsync } from "@/redux/userSlice";
 import { useSchools } from "@/lib/queries";
-import { Skeleton } from "@/components/ui/skeleton";
+// import { Skeleton } from "@/components/ui/skeleton";
 
 export default function UserManagementPage() {
   const { data: session, status } = useSession();

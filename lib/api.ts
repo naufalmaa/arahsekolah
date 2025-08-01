@@ -19,6 +19,15 @@ interface ApiResponse<T> {
   issues?: z.ZodIssue[]; // For Zod validation errors
 }
 
+function isErrorWithMessage(error: unknown): error is { message: string } {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    'message' in error &&
+    typeof (error as { message: unknown }).message === 'string'
+  );
+}
+
 async function apiCall<T>(
   url: string,
   method: string,
@@ -71,10 +80,10 @@ async function apiCall<T>(
       errorMessage = error.message;
     } else if (typeof error === 'string') {
       errorMessage = error;
-    } else if (typeof error === 'object' && error !== null && 'message' in error && typeof (error as any).message === 'string') {
-        // This handles cases where error is an object but not an instance of Error,
-        // but still has a 'message' property.
-        errorMessage = (error as any).message;
+    } else if (isErrorWithMessage(error)) { // Used the new type guard here
+      errorMessage = error.message; // Now safe, 'error' is { message: string }
+    } else {
+        errorMessage = 'An unknown and unhandled error occurred.';
     }
     return { success: false, error: errorMessage };
   }

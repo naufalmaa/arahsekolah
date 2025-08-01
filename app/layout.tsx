@@ -6,7 +6,7 @@ import { Inter } from "next/font/google";
 import "./globals.css"; // Your global CSS imports
 import { Toaster } from "@/components/ui/sonner"; // Assuming you use Sonner for toasts
 import { getServerSession } from "next-auth"; // Import getServerSession for server-side session fetching
-import { authOptions } from "@/app/api/auth/[...nextauth]/route"; // Import your authOptions
+import { authOptions } from "@/lib/auth";
 import Providers from "@/components/Providers"; // CORRECTED: Import the new Providers component
 
 const inter = Inter({ subsets: ["latin"] });

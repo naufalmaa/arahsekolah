@@ -1,11 +1,11 @@
-// File: app/api/schools/route.ts
+// File: app/api/schools/route.ts - Explicit type fix
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
-import { CreateSchoolSchema } from "@/lib/schemas"; // Import CreateSchoolSchema
+import { CreateSchoolSchema } from "@/lib/schemas";
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
     const session = await getServerSession(authOptions);
     console.log("User session for GET schools:", session);
@@ -38,13 +38,26 @@ export async function POST(req: NextRequest) {
 
   const validatedData = validationResult.data;
 
-  const dataToUpdate = Object.fromEntries(
-      Object.entries(validatedData).filter(([, value]) => value !== undefined)
-    );
-
   try {
+    // Use the validated data directly
     const newSchool = await prisma.school.create({
-      data: dataToUpdate, // Use the validated data
+      data: {
+        name: validatedData.name,
+        status: validatedData.status,
+        npsn: validatedData.npsn,
+        bentuk: validatedData.bentuk,
+        alamat: validatedData.alamat,
+        kelurahan: validatedData.kelurahan,
+        kecamatan: validatedData.kecamatan,
+        telp: validatedData.telp || "", // Provide empty string if null/undefined (if keeping telp required)
+        lat: validatedData.lat,
+        lng: validatedData.lng,
+        achievements: validatedData.achievements,
+        contact: validatedData.contact,
+        description: validatedData.description,
+        programs: validatedData.programs,
+        website: validatedData.website || null, // Convert empty string to null
+      },
     });
     return NextResponse.json(newSchool, { status: 201 });
   } catch (error) {

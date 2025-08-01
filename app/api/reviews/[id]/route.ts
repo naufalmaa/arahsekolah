@@ -2,18 +2,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 import { UpdateReviewSchema, IdParamSchema } from "@/lib/schemas"; // Import schemas
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await getServerSession(authOptions);
   if (!session || !session.user || !session.user.id || !session.user.role) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
-  const paramValidation = IdParamSchema.safeParse(params);
+
+  const resolvedParams = await params; // Await the params Promise
+
+  const paramValidation = IdParamSchema.safeParse(resolvedParams);
   if (!paramValidation.success) {
     return NextResponse.json(
       {
@@ -66,7 +69,7 @@ export async function DELETE(
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
@@ -74,8 +77,10 @@ export async function PUT(
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
+  const resolvedParams = await params; // Await the params Promise
   // Validate 'id' parameter
-  const paramValidation = IdParamSchema.safeParse(params);
+  const paramValidation = IdParamSchema.safeParse(resolvedParams);
+
   if (!paramValidation.success) {
     return NextResponse.json(
       {
