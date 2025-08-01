@@ -1,27 +1,22 @@
-// app/map/page.tsx
-import { Suspense } from "react";
-import dynamic from "next/dynamic";
-import {prisma} from "@/lib/prisma";
+// File: app/map/page.tsx
 
-const SchoolMap = dynamic(() => import("@/components/SchoolMap"), {
-  ssr: false,
-  loading: () => <p>Loading map...</p>,
-});
+import { prisma } from "@/lib/prisma";
+import MapClient from "@/components/dashboard/MapClient";
 
 export default async function MapPage() {
   const schools = await prisma.school.findMany({
-    include: { _count: { select: { reviews: true } } }
+    include: { reviews: true } // CORRECTED: Include reviews to compute the average rating
   });
-  // Compute average ratings if needed
+
   const schoolsWithRating = schools.map(s => ({
     ...s,
     avgRating: s.reviews.length ? s.reviews.reduce((sum, r) => sum + r.rating, 0) / s.reviews.length : 0
   }));
+
   return (
     <div className="map-page">
-      <Suspense fallback={<p>Loading map...</p>}>
-        <SchoolMap schools={schoolsWithRating} />
-      </Suspense>
+      {/* CORRECTED: Render the client component and pass the data as a prop. */}
+      <MapClient schoolsWithRating={schoolsWithRating} />
     </div>
   );
 }
