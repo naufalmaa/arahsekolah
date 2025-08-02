@@ -156,7 +156,7 @@ export default function UserTable({ users, loading, schools }: UserTableProps) {
       
       {/* Edit/Create User Dialog */}
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-        <DialogContent className="sm:max-w-[500px] bg-white/95 backdrop-blur-md border border-slate-200 rounded-3xl shadow-2xl">
+        <DialogContent className="sm:max-w-[500px]  backdrop-blur-md border border-slate-200 rounded-3xl shadow-2xl">
           <DialogHeader className="p-6 pb-4">
             <DialogTitle className="text-2xl font-bold text-slate-900">
               {selectedUser ? 'Edit User Account' : 'Create New User'}

@@ -5,15 +5,13 @@ ArahSekolah memadukan peta interaktif, katalog sekolah lengkap, dan ulasan orang
 
 ---
 
-## ✨ Sorotan Fitur
+## ✨ Fitur yang ada di ArahSekolah
 
 - **Peta Interaktif** – Lihat letak semua SD di Bandung beserta detail singkat lewat penanda custom (Leaflet.js).  
 - **Katalog >400 Sekolah** – Status, alamat, kontak, program, hingga prestasi tersaji rapi.  
 - **Ulasan & Peringkat** – Orang tua bisa memberi rating (kenyamanan, fasilitas, pembelajaran, kepemimpinan) dan satu ulasan per sekolah.  
 - **Autentikasi Aman** – NextAuth.js dengan opsi Email/Password & Google OAuth.  
 - **Role-Based Access** – Superadmin, School Admin, dan User; tiap peran punya haknya sendiri.  
-- **UI Responsif** – Dibangun dengan Tailwind CSS + shadcn/ui, nyaman di ponsel maupun desktop.  
-- **Arsitektur Modern** – Next.js App Router, Redux Toolkit, dan React Query menjaga data tetap sinkron.  
 
 ---
 
@@ -25,7 +23,7 @@ ArahSekolah memadukan peta interaktif, katalog sekolah lengkap, dan ulasan orang
 
 ---
 
-## 🛠️ Tumpukan Teknologi
+## 🛠️ Stack yang digunakan
 
 | Kategori        | Teknologi Utama                                                    |
 | --------------- | ------------------------------------------------------------------ |
@@ -44,7 +42,7 @@ ArahSekolah memadukan peta interaktif, katalog sekolah lengkap, dan ulasan orang
 
 > **Catatan:** Langkah di bawah sama persis dengan README sebelumnya—kami pertahankan untuk memudahkan.
 
-### 1. Prasyarat
+### 1. Requirement
 - Node.js ≥ 18  
 - Git  
 - PostgreSQL aktif
@@ -60,7 +58,7 @@ npm install   # atau yarn install / pnpm install
 
 ### 3. Variabel Lingkungan
 
-Buat `.env` di root (salin `.env.example` bila ada):
+Buat `.env` di root (salin `.env.example` bila ada) contohnya seperti ini:
 
 ```env
 DATABASE_URL="postgresql://postgres:password@localhost:5432/arahsekolah"
@@ -68,6 +66,7 @@ GOOGLE_CLIENT_ID="YOUR_GOOGLE_CLIENT_ID"
 GOOGLE_CLIENT_SECRET="YOUR_GOOGLE_CLIENT_SECRET"
 NEXTAUTH_SECRET="YOUR_NEXTAUTH_SECRET"
 NEXTAUTH_URL="http://localhost:3000"
+NEXT_PUBLIC_BASE_URL=http://localhost:3000
 ```
 
 ### 4. Migrasi & Seed

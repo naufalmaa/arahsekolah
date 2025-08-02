@@ -175,7 +175,7 @@ export default function UserForm({
   };
 
   return (
-    <div className="bg-white/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-200">
+    <div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <FormField
@@ -202,7 +202,8 @@ export default function UserForm({
             control={form.control}
             name="email"
             render={({ field }) => (
-              <FormItem>
+                            <FormItem className="mt-4">
+
                 <FormLabel className="text-slate-700 font-semibold">
                   Email Address
                 </FormLabel>
@@ -223,7 +224,8 @@ export default function UserForm({
             control={form.control}
             name="password"
             render={({ field }) => (
-              <FormItem>
+                            <FormItem className="mt-4">
+
                 <FormLabel className="text-slate-700 font-semibold">
                   Password
                 </FormLabel>
@@ -248,7 +250,7 @@ export default function UserForm({
             control={form.control}
             name="role"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="mt-4">
                 <FormLabel className="text-slate-700 font-semibold">
                   User Role
                 </FormLabel>
@@ -257,16 +259,16 @@ export default function UserForm({
                   defaultValue={field.value}
                 >
                   <FormControl>
-                    <SelectTrigger className="bg-white/80 border-slate-300 rounded-xl py-3 px-4 text-slate-900 focus:border-slate-400 focus:ring-2 focus:ring-slate-200 transition-all duration-200">
+                    <SelectTrigger className="bg-white/80 border-slate-300 rounded-xl py-3 px-4 text-slate-900 focus:border-slate-400 focus:ring-2 focus:ring-slate-200 transition-all duration-200 p-6 w-full justify-evenly">
                       <SelectValue placeholder="Select a role" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent className="bg-white/95 backdrop-blur-md border border-slate-200 rounded-xl shadow-xl">
                     <SelectItem
                       value="USER"
-                      className="text-slate-700 hover:bg-slate-100 rounded-lg"
+                      className="text-slate-700 hover:bg-slate-100 rounded-lg p-2"
                     >
-                      <div className="flex flex-col">
+                      <div className="flex flex-col p-2">
                         <span className="font-medium">USER</span>
                         <span className="text-sm text-slate-500">
                           Parent or student account
@@ -275,9 +277,9 @@ export default function UserForm({
                     </SelectItem>
                     <SelectItem
                       value="SCHOOL_ADMIN"
-                      className="text-slate-700 hover:bg-slate-100 rounded-lg"
+                      className="text-slate-700 hover:bg-slate-100 rounded-lg p-2"
                     >
-                      <div className="flex flex-col">
+                      <div className="flex flex-col p-2">
                         <span className="font-medium">SCHOOL_ADMIN</span>
                         <span className="text-sm text-slate-500">
                           School administrator account
@@ -286,9 +288,9 @@ export default function UserForm({
                     </SelectItem>
                     <SelectItem
                       value="SUPERADMIN"
-                      className="text-slate-700 hover:bg-slate-100 rounded-lg"
+                      className="text-slate-700 hover:bg-slate-100 rounded-lg p-2"
                     >
-                      <div className="flex flex-col">
+                      <div className="flex flex-col p-2">
                         <span className="font-medium">SUPERADMIN</span>
                         <span className="text-sm text-slate-500">
                           System administrator
@@ -307,7 +309,8 @@ export default function UserForm({
               control={form.control}
               name="assignedSchoolId"
               render={({ field }) => (
-                <FormItem>
+                              <FormItem className="mt-4">
+
                   <FormLabel className="text-slate-700 font-semibold">
                     Assign to School
                   </FormLabel>
@@ -316,7 +319,7 @@ export default function UserForm({
                     defaultValue={field.value}
                   >
                     <FormControl>
-                      <SelectTrigger className="bg-white/80 border-slate-300 rounded-xl py-3 px-4 text-slate-900 focus:border-slate-400 focus:ring-2 focus:ring-slate-200 transition-all duration-200">
+                      <SelectTrigger className="bg-white/80 border-slate-300 rounded-xl py-3 px-4 text-slate-900 focus:border-slate-400 focus:ring-2 focus:ring-slate-200 transition-all duration-200 p-6 w-full justify-evenly">
                         <SelectValue placeholder="Select a school to assign" />
                       </SelectTrigger>
                     </FormControl>
