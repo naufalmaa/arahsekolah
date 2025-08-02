@@ -18,7 +18,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 const navItems = [
   { label: "Map", href: "/dashboard/map", icon: MapPin },
-  { label: "Catalogue", href: "/dashboard/list", icon: List },
+  { label: "Schools", href: "/dashboard/list", icon: List },
   { label: "Stats", href: "/dashboard/stats", icon: BarChart2 },
 ];
 

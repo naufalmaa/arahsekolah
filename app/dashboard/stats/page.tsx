@@ -41,7 +41,7 @@ interface ApiResponse {
   schoolName?: string;
   averageRating?: number;
   profileCompleteness?: number;
-  overallAverageRating?: number;
+  overallAvgRatingRecents?: number;
   recentUserReviews?: ReviewItem[];
   error?: string;
 }
@@ -208,8 +208,8 @@ export default function DashboardStatsPage() {
         loading={!stats}
       />
       <StatisticCard
-        title="Rating Rata-rata Anda"
-        value={`${stats?.overallAverageRating || 0} / 5.0`}
+        title="Rating rata-rata Anda"
+        value={`${stats?.overallAvgRatingRecents || 0} / 5.0`}
         icon={<School className="h-5 w-5" />}
         loading={!stats}
       />

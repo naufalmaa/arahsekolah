@@ -68,7 +68,7 @@ export const NearbySchoolsList = () => {
       return (
         <div className="space-y-4">
           {[...Array(3)].map((_, i) => (
-            <Skeleton key={i} className="h-full w-full" />
+            <Skeleton key={i} className="h-28 w-full" />
           ))}
         </div>
       );
