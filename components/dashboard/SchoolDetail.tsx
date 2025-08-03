@@ -21,17 +21,14 @@ import DetailPageSkeleton from "@/components/skeletons/DetailPageSkeleton";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { fetchSchoolById } from "@/redux/schoolSlice";
 
-const DynamicSchoolMap = dynamic(
-  () => import("@/components/dashboard/SchoolMap"),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="w-full h-64 bg-slate-100 rounded-2xl animate-pulse flex items-center justify-center text-slate-500">
-        Loading map...
-      </div>
-    ),
-  }
-);
+import { Star } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+
+const DynamicSchoolMap = dynamic(() => import("@/components/dashboard/SchoolMap"), {
+  ssr: false,
+  loading: () => <div className="w-full h-64 bg-slate-100 rounded-2xl animate-pulse" />,
+});
 
 interface SchoolDetailProps {
   schoolId: number;
@@ -42,6 +39,7 @@ export default function SchoolDetail({ schoolId }: SchoolDetailProps) {
   const { data: session } = useSession();
 
   const dispatch = useAppDispatch();
+
   const {
     selected: school,
     loading,
@@ -59,9 +57,7 @@ export default function SchoolDetail({ schoolId }: SchoolDetailProps) {
     session?.user?.role === "SUPERADMIN" ||
     session?.user?.role === "SCHOOL_ADMIN";
 
-  if (loading) {
-    return <DetailPageSkeleton />;
-  }
+  if (loading || !school) return <DetailPageSkeleton />;
 
   if (error) {
     return (
@@ -93,34 +89,46 @@ export default function SchoolDetail({ schoolId }: SchoolDetailProps) {
     );
   }
 
-  if (!school) {
-    return <DetailPageSkeleton />;
-  }
-
-  // const handleEditSchoolClick = () => {
-  //   setIsEditSchoolModalOpen(true);
-  // };
+  // FIX: Gunakan nullish coalescing operator (??) untuk memberikan nilai default
+  const avgRating = school.avgRating ?? 0.0;
+  const reviewCount = school.reviewCount ?? 0;
 
   return (
     <div className="space-y-8">
       {/* Hero Header Section */}
       <Card className="bg-white/80 backdrop-blur-sm border border-slate-200 rounded-3xl shadow-xl overflow-hidden mb-8">
-        <CardContent className="p-8">
-          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8">
-            <div className="flex-1 space-y-4">
+              {/* 1. Penambahan Gambar Header */}
+        <div className="relative h-48 sm:h-64 w-full">
+            <Image
+                src={school.status === 'Negeri' ? '/sekolah-negeri.jpg' : '/sekolah-swasta.jpg'}
+                alt={`Gambar ${school.name}`}
+                layout="fill"
+                objectFit="cover"
+                priority
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+        </div>
+        <CardContent className="p-8 -mt-16 relative z-10">
+          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+            <div className="flex-1 space-y-2">
               <h1 className="text-3xl lg:text-4xl font-bold text-slate-900 leading-tight">
                 {school.name}
               </h1>
               <div className="flex flex-wrap gap-3 text-sm mt-4 mb-4">
-                <span className="inline-flex items-center px-4 py-2 rounded-full text-slate-700 bg-slate-200 font-medium">
+                <span className={`inline-block px-3 py-1 text-sm font-semibold rounded-full shadow-md ${
+                    school.status === 'Negeri' ? 'bg-blue-600 text-white' : 'bg-green-600 text-white'
+                }`}>
                   {school.status}
                 </span>
                 <span className="inline-flex items-center px-4 py-2 rounded-full text-slate-700 bg-slate-200 font-medium">
                   {school.bentuk}
                 </span>
-                <span className="inline-flex items-center px-4 py-2 rounded-full text-slate-600 bg-slate-100 text-sm">
-                  NPSN: {school.npsn}
-                </span>
+                {/* 2. Informasi Average Rating & Total Review */}
+              <div className="flex items-center pt-2 gap-2 ">
+                <Star className="w-5 h-5 text-yellow-300" />
+                <span className="font-semibold text-lg">{avgRating.toFixed(1) ?? 'N/A'}</span>
+                <span className="text-sm">({reviewCount} ulasan)</span>
+              </div>
               </div>
               <p className="text-lg text-slate-600 leading-relaxed max-w-3xl">
                 {school.description ||
@@ -172,7 +180,7 @@ export default function SchoolDetail({ schoolId }: SchoolDetailProps) {
               )}
               <Button className="bg-slate-800 hover:bg-slate-900 text-white transition-all duration-300 transform hover:scale-105 rounded-2xl px-8 py-4 shadow-lg hover:shadow-xl">
                 <span className="flex items-center">
-                  Enroll Now
+                  <Link href="/dashboard/enroll">Enroll Now</Link>
                   <svg
                     className="ml-2 w-5 h-5"
                     fill="none"

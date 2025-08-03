@@ -1,11 +1,11 @@
 // File: components/dashboard/ReviewList.tsx
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { format } from "date-fns";
 import { CalendarIcon, StarFilledIcon } from "@radix-ui/react-icons";
 import { toast } from "sonner";
-// import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation"; // Impor useSearchParams
 import { useSession } from "next-auth/react";
 import {
   Card,
@@ -56,6 +56,9 @@ const ReviewList = ({ schoolId }: ReviewListProps) => {
   const { reviews, loading, error } = useAppSelector((state) => state.review);
 
   const { data: session } = useSession();
+
+  const searchParams = useSearchParams();
+  const reviewSectionRef = useRef<HTMLDivElement>(null);
   // const router = useRouter();
 
   const userId = session?.user?.id;
@@ -67,7 +70,17 @@ const ReviewList = ({ schoolId }: ReviewListProps) => {
 
   useEffect(() => {
     dispatch(fetchReviewsBySchoolId(schoolId));
-  }, [dispatch, schoolId]);
+
+    // Cek parameter URL saat komponen dimuat
+    if (searchParams.get('action') === 'review') {
+      // Buka modal
+      setIsAddReviewModalOpen(true);
+      // Scroll ke bagian ulasan
+      setTimeout(() => {
+        reviewSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
+      }, 300); // Sedikit delay agar UI siap
+    }
+  }, [dispatch, schoolId, searchParams]);
 
   const handleReviewAddedOrUpdated = () => {
     setIsAddReviewModalOpen(false);
@@ -155,7 +168,7 @@ const ReviewList = ({ schoolId }: ReviewListProps) => {
   const hasUserReviewed = reviews.some((review) => review.userId === userId);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8" ref={reviewSectionRef}>
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
         <div className="flex-1">
           <div className="inline-flex items-center px-5 py-3 rounded-full text-sm font-medium bg-slate-200 text-slate-700 mb-2">

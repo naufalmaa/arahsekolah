@@ -1,5 +1,6 @@
 // app/lib/types.ts
 import { Role } from '@prisma/client';
+// import { Role, School as PrismaSchool, Review as PrismaReview, User as PrismaUser } from '@prisma/client';
 
 export interface User {
   id: string;
@@ -46,6 +47,9 @@ export interface School {
   };
   createdAt: Date;
   updatedAt: Date;
+  // aggregasi
+  avgRating: number;
+  reviewCount: number;
 }
 
 export interface Review {
@@ -116,4 +120,36 @@ export interface PaginatedResponse<T> {
   page: number;
   limit: number;
   totalPages: number;
+}
+
+export interface SchoolWithStats {
+  id: number;
+  name: string;
+  status: string;
+  kelurahan: string;
+  kecamatan: string;
+  lat?: number | null;
+  lng?: number | null;
+  avgRating: number;
+  reviewCount: number;
+}
+
+export interface UpdateSchoolInput {
+  name?: string;
+  status?: string;
+  npsn?: string;
+  bentuk?: string;
+  telp?: string;
+  alamat?: string;
+  kelurahan?: string;
+  kecamatan?: string;
+  lat?: number | null;
+  lng?: number | null;
+  description?: string | null;
+  programs?: string | null;
+  achievements?: string | null;
+  website?: string | null;
+  contact?: string | null;
+  avgRating?: number;
+  reviewCount?: number;
 }

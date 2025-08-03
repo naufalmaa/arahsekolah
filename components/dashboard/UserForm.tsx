@@ -29,7 +29,7 @@ import {
   updateUserAsync,
   UserWithSchool,
 } from "@/redux/userSlice";
-import { School } from "@prisma/client";
+import { School } from '@/lib/types'
 import { toast } from "sonner";
 
 const formSchema = z

@@ -4,7 +4,8 @@ import {
   useMutation,
   useQueryClient,
 } from '@tanstack/react-query';
-import type { School, Review } from '@prisma/client';
+import type { Review } from '@prisma/client';
+import type { SchoolWithStats, School } from './types';
 
 type CreateReviewInput = {
   schoolId: number;
@@ -18,8 +19,9 @@ type CreateReviewInput = {
   kepemimpinan: number;
 };
 
-// Fetch all schools
+// Fetch all schools with stats
 export function useSchools() {
+  // MODIFIKASI: Gunakan tipe SchoolWithStats
   return useQuery<School[]>({
     queryKey: ['schools'],
     queryFn: async () => {

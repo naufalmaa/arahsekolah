@@ -7,10 +7,43 @@ import { CreateSchoolSchema } from "@/lib/schemas";
 
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions);
-    console.log("User session for GET schools:", session);
-    const schools = await prisma.school.findMany();
-    return NextResponse.json(schools);
+    const schools = await prisma.school.findMany({
+      include: {
+        _count: {
+          select: { reviews: true },
+        },
+        reviews: {
+          select: {
+            kenyamanan: true,
+            pembelajaran: true,
+            fasilitas: true,
+            kepemimpinan: true,
+          },
+        },
+      },
+    });
+
+    // Proses data untuk menambahkan avgRating
+    const schoolsWithAvgRating = schools.map(school => {
+      const reviewCount = school._count.reviews;
+      let avgRating = 0;
+      if (reviewCount > 0) {
+        const totalRating = school.reviews.reduce((sum, review) => 
+          sum + review.kenyamanan + review.pembelajaran + review.fasilitas + review.kepemimpinan, 0);
+        avgRating = totalRating / (reviewCount * 4); // 4 kriteria per ulasan
+      }
+      
+      // Hapus data reviews yang besar agar response API lebih ramping
+      const { reviews, ...schoolData } = school;
+
+      return {
+        ...schoolData,
+        avgRating: parseFloat(avgRating.toFixed(1)),
+        reviewCount: reviewCount,
+      };
+    });
+
+    return NextResponse.json(schoolsWithAvgRating);
   } catch (error) {
     console.error("Error fetching schools:", error);
     return NextResponse.json({ message: "Error fetching schools" }, { status: 500 });

@@ -8,10 +8,11 @@ import { useAppSelector } from '@/redux/store';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { User, ShieldCheck } from 'lucide-react';
 import UserTable from './UserTable';
-import { School as SchoolType } from '@prisma/client';
+import { School } from '@/lib/types'
 
 interface UserManagementClientProps {
-    schools: SchoolType[];
+    // Change the type here from SchoolType[] to School[]
+    schools: School[]; 
 }
 
 export default function UserManagementClient({ schools }: UserManagementClientProps) {

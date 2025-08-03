@@ -8,7 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { UserWithSchool } from '@/redux/userSlice';
-import { School as SchoolType } from '@prisma/client';
+import { School } from '@/lib/types'
 import { PlusCircle } from 'lucide-react';
 import UserForm from './UserForm';
 import DeleteUserConfirmation from './DeleteUserConfirmation';
@@ -20,7 +20,7 @@ import { Pencil1Icon, TrashIcon  } from "@radix-ui/react-icons";
 interface UserTableProps {
   users: UserWithSchool[];
   loading: boolean;
-  schools: SchoolType[];
+  schools: School[];
 }
 
 export default function UserTable({ users, loading, schools }: UserTableProps) {
@@ -156,7 +156,7 @@ export default function UserTable({ users, loading, schools }: UserTableProps) {
       
       {/* Edit/Create User Dialog */}
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-        <DialogContent className="sm:max-w-[500px]  backdrop-blur-md border border-slate-200 rounded-3xl shadow-2xl">
+        <DialogContent className="sm:max-w-[500px] bg-white/95 backdrop-blur-md border border-slate-200 rounded-3xl shadow-2xl">
           <DialogHeader className="p-6 pb-4">
             <DialogTitle className="text-2xl font-bold text-slate-900">
               {selectedUser ? 'Edit User Account' : 'Create New User'}

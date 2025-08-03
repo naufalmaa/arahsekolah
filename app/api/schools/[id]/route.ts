@@ -6,10 +6,9 @@ import { Prisma } from '@prisma/client'; // Import Prisma
 
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ id: string }> } // Fixed parameter type
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const resolvedParams = await params; // Await the params Promise
-  // Validate 'id' parameter using Zod
+  const resolvedParams = await params;
   const paramValidation = IdParamSchema.safeParse(resolvedParams);
   if (!paramValidation.success) {
     return NextResponse.json(
@@ -22,20 +21,12 @@ export async function GET(
   try {
     const school = await prisma.school.findUnique({
       where: { id: schoolId },
-      include: { // Assuming you want reviews included for detail view, as per previous conversation
+      include: {
         reviews: {
           include: {
-            user: {
-              select: {
-                id: true,
-                name: true,
-                email: true,
-              },
-            },
+            user: { select: { id: true, name: true, email: true } },
           },
-          orderBy: {
-            createdAt: 'desc',
-          },
+          orderBy: { createdAt: 'desc' },
         },
       },
     });
@@ -44,15 +35,19 @@ export async function GET(
       return NextResponse.json({ message: "School not found." }, { status: 404 });
     }
 
-    // Calculate average rating if reviews exist (assuming structure for this)
+    const reviewCount = school.reviews.length;
     let avgRating = 0;
-    if (school.reviews && school.reviews.length > 0) {
+    if (reviewCount > 0) {
       const totalRating = school.reviews.reduce((sum, review) =>
         sum + review.kenyamanan + review.pembelajaran + review.fasilitas + review.kepemimpinan, 0);
-      avgRating = totalRating / (school.reviews.length * 4); // 4 criteria per review
+      avgRating = totalRating / (reviewCount * 4);
     }
 
-    return NextResponse.json({ ...school, avgRating });
+    return NextResponse.json({ 
+        ...school, 
+        avgRating: parseFloat(avgRating.toFixed(1)),
+        reviewCount: reviewCount 
+    });
   } catch (error: unknown) {
     console.error("Failed to fetch school:", error);
     return NextResponse.json(

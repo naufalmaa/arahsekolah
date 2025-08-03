@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { School } from "@prisma/client";
+import { School } from "@/lib/types";
 
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { updateSchoolAsync } from '@/redux/schoolSlice';
