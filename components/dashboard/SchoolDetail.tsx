@@ -109,13 +109,13 @@ export default function SchoolDetail({ schoolId }: SchoolDetailProps) {
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
         </div>
         <CardContent className="p-8 -mt-16 relative z-10">
-          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6 mt-6">
             <div className="flex-1 space-y-2">
               <h1 className="text-3xl lg:text-4xl font-bold text-slate-900 leading-tight">
                 {school.name}
               </h1>
               <div className="flex flex-wrap gap-3 text-sm mt-4 mb-4">
-                <span className={`inline-block px-3 py-1 text-sm font-semibold rounded-full shadow-md ${
+                <span className={`inline-block px-3 py-2 text-sm font-semibold rounded-full shadow-md ${
                     school.status === 'Negeri' ? 'bg-blue-600 text-white' : 'bg-green-600 text-white'
                 }`}>
                   {school.status}

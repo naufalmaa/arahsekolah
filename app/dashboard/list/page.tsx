@@ -46,17 +46,24 @@ function calculateDistance(
 }
 
 const SchoolCardSkeleton = () => (
-  <div className="space-y-2">
-    <Skeleton className="h-40 w-full" />
-    <div className="p-4 space-y-3">
+  <Card className="group overflow-hidden transition-all duration-300 border border-slate-300">
+    <Skeleton className="h-40 w-full rounded-b-none" />
+    <CardHeader>
+      <Skeleton className="h-4 w-1/4 mb-2" />
       <Skeleton className="h-6 w-3/4" />
       <Skeleton className="h-4 w-1/2" />
-      <div className="flex justify-between pt-2 border-t">
-        <Skeleton className="h-5 w-1/3" />
-        <Skeleton className="h-5 w-1/4" />
+    </CardHeader>
+    <CardContent className="flex flex-col gap-3 text-sm text-slate-600">
+      <div className="flex items-center justify-between pt-3 border-t">
+        <div className="flex items-center gap-1">
+          <Skeleton className="h-5 w-16" />
+        </div>
+        <div className="flex items-center gap-1">
+          <Skeleton className="h-5 w-16" />
+        </div>
       </div>
-    </div>
-  </div>
+    </CardContent>
+  </Card>
 );
 
 export default function ListPage() {
