@@ -49,6 +49,7 @@ export const authOptions: NextAuthOptions = {
           name: user.name || user.email.split('@')[0],
           role: user.role,
           image: user.image,
+          assignedSchoolId: user.assignedSchoolId,
         };
       },
     }),
@@ -78,6 +79,7 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id;
         token.role = user.role;
+        token.assignedSchoolId = user.assignedSchoolId;
       }
       return token;
     },
@@ -86,6 +88,7 @@ export const authOptions: NextAuthOptions = {
      if (session.user) {
         session.user.id = token.id;
         session.user.role = token.role;
+        session.user.assignedSchoolId = token.assignedSchoolId;
       }
       return session;
     },

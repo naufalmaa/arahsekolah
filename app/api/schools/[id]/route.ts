@@ -1,8 +1,11 @@
 // app/api/schools/[id]/route.ts
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { IdParamSchema, UpdateSchoolSchema } from '@/lib/schemas'; // Import schemas
-import { Prisma } from '@prisma/client'; // Import Prisma
+import { IdParamSchema, UpdateSchoolSchema } from '@/lib/schemas'; 
+import { Prisma } from '@prisma/client';
+// ADDED: Import untuk mengambil sesi server-side
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
 
 export async function GET(
   request: Request,
@@ -61,9 +64,14 @@ export async function PUT(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  // Validate 'id' parameter
-  const resolvedParams = await params; // Await the params Promise
+  // ADDED: Otorisasi berdasarkan sesi dan peran pengguna
+  const session = await getServerSession(authOptions);
 
+  if (!session?.user?.id || !session.user.role) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
+  
+  const resolvedParams = await params; 
   const paramValidation = IdParamSchema.safeParse(resolvedParams);
   if (!paramValidation.success) {
     return NextResponse.json(
@@ -71,13 +79,26 @@ export async function PUT(
       { status: 400 }
     );
   }
-  const schoolId = paramValidation.data.id;
+  const schoolIdToEdit = paramValidation.data.id;
+  
+  // ADDED: Logika keamanan untuk SCHOOL_ADMIN
+  if (session.user.role === 'SCHOOL_ADMIN') {
+    if (session.user.assignedSchoolId !== schoolIdToEdit) {
+      return NextResponse.json(
+        { message: "Forbidden: You are not authorized to edit this school." },
+        { status: 403 }
+      );
+    }
+  } else if (session.user.role !== 'SUPERADMIN') {
+    // Hanya SUPERADMIN dan SCHOOL_ADMIN yang diizinkan melanjutkan
+    return NextResponse.json(
+      { message: "Forbidden: You do not have permission to perform this action." },
+      { status: 403 }
+    );
+  }
 
   const body = await request.json();
-
-  // Validate request body using Zod schema
   const validationResult = UpdateSchoolSchema.safeParse(body);
-
   if (!validationResult.success) {
     return NextResponse.json(
       { message: "Invalid request body for school update.", issues: validationResult.error.issues },
@@ -86,15 +107,14 @@ export async function PUT(
   }
 
   const validatedData = validationResult.data;
-
   const dataToUpdate = Object.fromEntries(
       Object.entries(validatedData).filter(([, value]) => value !== undefined)
     );
 
   try {
     const updatedSchool = await prisma.school.update({
-      where: { id: schoolId },
-      data: dataToUpdate, // Use validated data
+      where: { id: schoolIdToEdit }, // REPLACED: Menggunakan schoolIdToEdit yang sudah divalidasi
+      data: dataToUpdate,
     });
     return NextResponse.json(updatedSchool);
   } catch (err: unknown) {

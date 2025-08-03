@@ -21,7 +21,7 @@ import DetailPageSkeleton from "@/components/skeletons/DetailPageSkeleton";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { fetchSchoolById } from "@/redux/schoolSlice";
 
-import { Star } from "lucide-react";
+import { Star, ListChecks } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -53,9 +53,10 @@ export default function SchoolDetail({ schoolId }: SchoolDetailProps) {
   }, [dispatch, schoolId]);
 
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const isAdminOrSuperadmin =
-    session?.user?.role === "SUPERADMIN" ||
-    session?.user?.role === "SCHOOL_ADMIN";
+  const canEditSchool = session?.user && (
+    session.user.role === 'SUPERADMIN' ||
+    (session.user.role === 'SCHOOL_ADMIN' && session.user.assignedSchoolId === schoolId)
+  );
 
   if (loading || !school) return <DetailPageSkeleton />;
 
@@ -89,9 +90,54 @@ export default function SchoolDetail({ schoolId }: SchoolDetailProps) {
     );
   }
 
-  // FIX: Gunakan nullish coalescing operator (??) untuk memberikan nilai default
   const avgRating = school.avgRating ?? 0.0;
   const reviewCount = school.reviewCount ?? 0;
+
+    const renderEnrollmentButton = () => {
+    if (!session?.user) return null;
+
+    const { role, assignedSchoolId } = session.user;
+
+    if (role === 'USER') {
+      return (
+        <Button asChild className="bg-slate-800 hover:bg-slate-900 text-white transition-all duration-300 transform hover:scale-105 rounded-2xl px-8 py-4 shadow-lg hover:shadow-xl">
+          <Link href="/dashboard/enroll">
+            <span className="flex items-center">
+              Enroll Now
+              <svg
+                className="ml-2 w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13 7l5 5m0 0l-5 5m5-5H6"
+                />
+              </svg>
+            </span>
+          </Link>
+        </Button>
+      );
+    }
+
+    if (role === 'SUPERADMIN' || (role === 'SCHOOL_ADMIN' && assignedSchoolId === schoolId)) {
+      return (
+        <Button asChild className="bg-green-700 hover:bg-green-800 text-white transition-all duration-300 transform hover:scale-105 rounded-2xl px-8 py-4 shadow-lg hover:shadow-xl">
+           <Link href="/dashboard/enroll">
+            <span className="flex items-center">
+              <ListChecks className="mr-2 h-5 w-5" />
+              Enrollment List
+            </span>
+          </Link>
+        </Button>
+      );
+    }
+
+    return null; // Tombol disembunyikan untuk SCHOOL_ADMIN di sekolah lain
+  };
 
   return (
     <div className="space-y-8">
@@ -137,7 +183,8 @@ export default function SchoolDetail({ schoolId }: SchoolDetailProps) {
             </div>
 
             <div className="flex flex-col gap-4 lg:w-auto w-full">
-              {isAdminOrSuperadmin && (
+              {/* REPLACED: Menggunakan kondisi 'canEditSchool' yang baru */}
+              {canEditSchool && (
                 <Dialog
                   open={isEditDialogOpen}
                   onOpenChange={setIsEditDialogOpen}
@@ -156,8 +203,8 @@ export default function SchoolDetail({ schoolId }: SchoolDetailProps) {
                         Edit School Details
                       </DialogTitle>
                       <DialogDescription className="text-slate-600 text-lg">
-                        Make changes to the school&apos;ss information here.
-                        Click save when you&apos;sre done.
+                        Make changes to the school&apos;s information here.
+                        Click save when you&apos;re done.
                       </DialogDescription>
                     </DialogHeader>
                     <div className="overflow-y-auto max-h-[calc(90vh-150px)]">
@@ -178,24 +225,7 @@ export default function SchoolDetail({ schoolId }: SchoolDetailProps) {
                   </DialogContent>
                 </Dialog>
               )}
-              <Button className="bg-slate-800 hover:bg-slate-900 text-white transition-all duration-300 transform hover:scale-105 rounded-2xl px-8 py-4 shadow-lg hover:shadow-xl">
-                <span className="flex items-center">
-                  <Link href="/dashboard/enroll">Enroll Now</Link>
-                  <svg
-                    className="ml-2 w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M13 7l5 5m0 0l-5 5m5-5H6"
-                    />
-                  </svg>
-                </span>
-              </Button>
+              {renderEnrollmentButton()}
             </div>
           </div>
         </CardContent>

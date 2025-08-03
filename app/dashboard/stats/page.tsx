@@ -19,6 +19,9 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
+// ADDED: Import Link, Button, dan ikon
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 interface ReviewItem {
   id: number;
@@ -39,6 +42,7 @@ interface ApiResponse {
   recentReviews?: ReviewItem[];
   userSignups?: Array<{ month: string; count: number }>;
   schoolName?: string;
+  assignedSchoolId?: number;
   averageRating?: number;
   profileCompleteness?: number;
   overallAvgRatingRecents?: number;
@@ -197,39 +201,39 @@ export default function DashboardStatsPage() {
         );
       case "USER":
         return (
-<div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-  {/* Left side: StatisticCards + Reviews Table (takes col-span-2) */}
-  <div className="lg:col-span-2 space-y-6">
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <StatisticCard
-        title="Total Ulasan Anda"
-        value={stats?.reviewCount || 0}
-        icon={<Star className="h-5 w-5" />}
-        loading={!stats}
-      />
-      <StatisticCard
-        title="Rating rata-rata Anda"
-        value={`${stats?.overallAvgRatingRecents || 0} / 5.0`}
-        icon={<School className="h-5 w-5" />}
-        loading={!stats}
-      />
-    </div>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Left side: StatisticCards + Reviews Table (takes col-span-2) */}
+            <div className="lg:col-span-2 space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <StatisticCard
+                  title="Total Ulasan Anda"
+                  value={stats?.reviewCount || 0}
+                  icon={<Star className="h-5 w-5" />}
+                  loading={!stats}
+                />
+                <StatisticCard
+                  title="Rating rata-rata Anda"
+                  value={`${stats?.overallAvgRatingRecents || 0} / 5.0`}
+                  icon={<School className="h-5 w-5" />}
+                  loading={!stats}
+                />
+              </div>
 
-          <div className="mt-6">
-    <RecentReviewsTable
-      reviews={stats?.recentUserReviews || []}
-      title="Aktivitas Ulasan Saya"
-      description="5 ulasan terakhir yang telah Anda berikan."
-      loading={!stats}
-    />
-    </div>
-  </div>
+              <div className="mt-6">
+                <RecentReviewsTable
+                  reviews={stats?.recentUserReviews || []}
+                  title="Aktivitas Ulasan Saya"
+                  description="5 ulasan terakhir yang telah Anda berikan."
+                  loading={!stats}
+                />
+              </div>
+            </div>
 
-  {/* Right side: Nearby Schools List spans both rows */}
-  <div className="h-full">
-    <NearbySchoolsList />
-  </div>
-</div>
+            {/* Right side: Nearby Schools List spans both rows */}
+            <div className="h-full">
+              <NearbySchoolsList />
+            </div>
+          </div>
         );
       default:
         return <p>Dashboard tidak tersedia untuk role Anda.</p>;
@@ -239,15 +243,26 @@ export default function DashboardStatsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-100 via-slate-50 to-blue-50 p-8">
       <div className="max-w-7xl mx-auto">
-        <div className="mb-6">
-          <h1 className="text-4xl font-bold text-slate-900">
-            Dashboard Statistik
-          </h1>
-          <p className="text-lg text-slate-600 mt-1">
-            {session.user.role === "SCHOOL_ADMIN"
-              ? `Dashboard untuk ${stats?.schoolName}`
-              : `Selamat datang kembali, ${session.user.name}!`}
-          </p>
+        {/* REPLACED: Header section diganti untuk mengakomodasi tombol baru */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
+          <div>
+            <h1 className="text-4xl font-bold text-slate-900">
+              Dashboard Statistik
+            </h1>
+            <p className="text-lg text-slate-600 mt-1">
+              {session.user.role === "SCHOOL_ADMIN"
+                ? `Ringkasan untuk ${stats?.schoolName}`
+                : `Selamat datang kembali, ${session.user.name}!`}
+            </p>
+          </div>
+          {session.user.role === "SCHOOL_ADMIN" && stats?.assignedSchoolId && !loading && (
+            <Button asChild className="bg-slate-800 hover:bg-slate-900 mt-4 sm:mt-0 rounded-xl shadow-lg">
+              <Link href={`/dashboard/detail/${stats.assignedSchoolId}`}>
+                <School className="mr-2 h-4 w-4" />
+                Lihat Halaman Sekolah
+              </Link>
+            </Button>
+          )}
         </div>
         {renderDashboard()}
       </div>

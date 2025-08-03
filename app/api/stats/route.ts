@@ -115,6 +115,7 @@ export async function GET() {
         4;
 
       return NextResponse.json({
+        assignedSchoolId: school.id, // ADDED: Kirim ID sekolah ke client
         schoolName: school.name,
         reviewCount: school._count.reviews,
         averageRating: parseFloat(overallAvg.toFixed(2)),

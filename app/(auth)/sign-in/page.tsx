@@ -2,7 +2,7 @@
 
 "use client";
 
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -28,6 +28,14 @@ export default function SignInPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [showPassword, setShowPassword] = useState(false);
+
+  const { status } = useSession();
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.push("/dashboard/map");
+    }
+  }, [status, router]);
 
   useEffect(() => {
     const errorParam = searchParams.get("error");
@@ -60,8 +68,19 @@ export default function SignInPage() {
       return;
     }
 
-    router.push(res?.url || "/dashboard/map");
+    if (res?.ok) {
+        // REPLACED: Menggunakan window.location.href untuk memastikan redirect yang reliable
+        window.location.href = res?.url || "/dashboard/map";
+    }
   };
+
+    if (status === 'loading' || status === 'authenticated') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <div className="w-12 h-12 border-4 border-slate-300 border-t-slate-800 rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex bg-gradient-to-br from-slate-100 via-slate-50 to-blue-50">
